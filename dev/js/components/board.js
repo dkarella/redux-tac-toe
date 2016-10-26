@@ -6,23 +6,32 @@ export default class Board extends Component {
   }
 
   drawBoard(ctx, board) {
-    const width = ctx.canvas.clientWidth;
-    const height = ctx.canvas.clientHeight;
+    const width = ctx.canvas.width;
+    const height = ctx.canvas.height;
+
+    // clear the canvas
+    ctx.beginPath();
+    ctx.clearRect(0, 0, width, height);
+    ctx.closePath();
 
     // vertical lines
     for(let i = 0; i < 2; i++) {
       const x = (width/3)*(1+i);
+      ctx.beginPath();
       ctx.moveTo(x,0);
       ctx.lineTo(x,height);
       ctx.stroke();
+      ctx.closePath();
     }
 
     // horizontal lines
     for(let i = 0; i < 2; i++) {
       const y = (height/3)*(1+i);
+      ctx.beginPath();
       ctx.moveTo(0,y);
       ctx.lineTo(width,y);
       ctx.stroke();
+      ctx.closePath();
     }
 
     for(let i = 0; i < 9; i++) {
@@ -39,13 +48,17 @@ export default class Board extends Component {
           y = 2 * (height/3);
         }
 
+        ctx.beginPath();
         ctx.moveTo(x,y);
         ctx.lineTo(x+(width/3),y+(height/3));
         ctx.stroke();
+        ctx.closePath();
 
+        ctx.beginPath();
         ctx.moveTo(x+(width/3),y);
         ctx.lineTo(x,y+(height/3));
         ctx.stroke();
+        ctx.closePath();
 
       } else if (board[i] === 2) {
         // draw an O
@@ -60,9 +73,11 @@ export default class Board extends Component {
           y = 2 * (height/3) + (height/6);
         }
 
+        ctx.beginPath();
         ctx.moveTo(x+(height/6), y);
         ctx.arc(x, y, (width/6), 0, 2 * Math.PI, false);
         ctx.stroke();
+        ctx.closePath();
       }
     }
   }

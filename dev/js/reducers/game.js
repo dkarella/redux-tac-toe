@@ -6,13 +6,14 @@ const initial = {
     0,0,0,
     0,0,0
   ],
+  winner: 0,
   dimensions: {
     width: 300,
     height: 300
   }
 };
 
-export default function(state=initial, action) {
+export default function(state=Object.assign({}, initial), action) {
 
   switch (action.type) {
     case "START_GAME":
@@ -29,6 +30,8 @@ export default function(state=initial, action) {
 
 function startGame() {
   const newGame = Object.assign({}, initial);
+  clearBoard(newGame.board);
+  console.log('newGame', newGame);
   newGame.playing = true;
   return newGame;
 }
@@ -54,10 +57,14 @@ function handleClick(state, x, y) {
   if(board[i] === 0) {
     const next = Object.assign({}, state);
     next.board[i] = 1;
+    // check if player won before ending the game.
+    if(checkGameOver(next)) {
+      return next;
+    };
+    // apply the opponent's move
     applyOppentsMove(next.board);
-    if(isGameOver(next.board)){
-      // TODO: implement game over state;
-    }
+    // check if opponent won
+    checkGameOver(next);
     return next;
   }
 
@@ -86,7 +93,65 @@ function applyOppentsMove(board) {
   */
 }
 
-// TODO:
-function isGameOver() {
+function checkGameOver(state) {
+  const {board} = state;
+  let playerWon = false;
+  let computerWon = false;
+  // check rows
+  for(let i = 0; i < 9; i+=3) {
+    if(board[i] !== 0 && board[i] === board[i+1] && board[i] === board[i+2]) {
+      if(board[i] === 1) {
+        playerWon = true;
+      } else if (board[i] === 2){
+        computerWon = true;
+      }
+    }
+  }
+  // check columns
+  for(let i = 0; i < 3; i++) {
+    if(board[i] !== 0 && board[i] === board[i+3] && board[i] === board[i+6]) {
+      if(board[i] === 1) {
+        playerWon = true;
+      } else if (board[i] === 2){
+        computerWon = true;
+      }
+    }
+  }
+
+  // check diagonals
+  if(board[0] !== 0 && board[0] === board[4] && board[0] === board[8]) {
+    if(board[0] === 1) {
+      playerWon = true;
+    } else if (board[0] === 2){
+      computerWon = true;
+    }
+  }
+
+  if(board[2] !== 0 && board[2] === board[4] && board[2] === board[6]) {
+    if(board[2] === 1) {
+      playerWon = true;
+    } else if (board[2] === 2){
+      computerWon = true;
+    }
+  }
+
+  if(playerWon) {
+    state.gameOver = true;
+    state.winner = 1;
+    return true;
+  }
+
+  if(computerWon) {
+    state.gameOver = true;
+    state.winner = 2;
+    return true;
+  }
+
   return false;
+}
+
+function clearBoard(board) {
+  for(let i = 0; i < board.length; i++) {
+    board[i] = 0;
+  }
 }
